@@ -1,0 +1,895 @@
+\documentclass{beamer}
+\usetheme{Antibes}
+\usepackage{xcolor, colortbl}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{alltt}
+\usepackage{tikz}
+\usepackage{framed}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{marvosym}
+\usepackage{crayola}
+\usepackage{mathpartir}
+\usepackage{tabularx}
+\usepackage[belowskip=-15pt,aboveskip=0pt]{caption}
+\usepackage[skins]{tcolorbox}
+\usepackage{multicol}
+\usetikzlibrary{positioning,shapes,arrows, backgrounds, fit, shadows}
+\usetikzlibrary{decorations.markings}
+%\usepackage{wasysym}
+%\usepackage{marvosym}
+\setbeamertemplate{footline}[frame number]
+%\usecolortheme{fly}
+\usefonttheme{serif}
+
+\title[Sujit]{Programming Language Implementation -- Introduction}
+\author{Sujit Kumar Chakrabarti}
+\institute{IIITB}
+\date{IIIT-B}
+
+%\begin{document}
+%\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+%
+%\maketitle
+
+\definecolor{lightblue}{rgb}{0.8,0.93,1.0} % color values Red, Green, Blue
+\definecolor{darkblue}{rgb}{0.4,0.3,1.0} % color values Red, Green, Blue
+\definecolor{Blue}{rgb}{0,0,1.0} % color values Red, Green, Blue
+\definecolor{darkgreen}{rgb}{0,0.7,0.2} % color values Red, Green, Blue
+\definecolor{Red}{rgb}{1,0,0} % color values Red, Green, Blue
+\definecolor{Pink}{rgb}{0.7,0,0.2}
+\definecolor{links}{HTML}{2A1B81}
+\definecolor{mydarkgreen}{HTML}{126215}
+\newcommand{\highlight}[1]{{\color{Red}(#1)}}
+
+\newcommand{\myheader}[1]{
+	{\color{darkblue}
+		\begin{Large}
+			\begin{center}
+				{#1}
+			\end{center}
+		\end{Large}
+	}
+}
+\newcommand{\myminorheader}[1]{
+	{\color{BrickRed}
+		\begin{Large}
+			{\fontfamily{\sfdefault}\selectfont\textbf{#1}}
+		\end{Large}
+	}
+}
+
+%\tikzstyle{input} = [coordinate]
+%\tikzstyle{output} = [coordinate]
+
+
+\tikzstyle{bb}=[%
+      rectangle, draw=black, thick, fill=OliveGreen!30, drop shadow, align=center,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{inv}=[%
+      rectangle, draw=none,  align=center,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{db}=[%
+      ellipse, draw=black, thick, fill=pink, drop shadow, align=center,
+      text ragged, minimum height=2em, inner sep=6pt
+]
+
+\tikzstyle{jn}=[%
+      ellipse, draw=black, thick, fill=black
+]
+
+\tikzstyle{io}=[%
+      trapezium, trapezium left angle=60, trapezium right angle=120, draw=black, thick, fill=brown, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt, align=center
+]
+
+\tikzstyle{glio}=[%
+      trapezium, trapezium left angle=60, trapezium right angle=120, draw=red, line width = 1mm, fill=brown, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+\tikzstyle{gl}=[%
+      rectangle, draw=red, line width = 1mm, fill=lightblue, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{en}=[%
+      rectangle, draw=black, thick, fill=none,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{sh}=[%
+      rectangle, draw=gray, thick, fill=none, color = gray,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+
+\lstdefinestyle{javacode}{
+	language = Java,
+	basicstyle = \ttfamily\scriptsize,
+	stringstyle = \ttfamily,
+	keywordstyle=\color{Blue}\bfseries,
+	identifierstyle=\color{Pink},
+	commentstyle=\color{darkgreen},
+	frame=single,
+	frameround=tttt,
+%	numbers=left
+	showstringspaces=false
+}
+
+\lstdefinestyle{camlcode}{
+	language = Caml,
+	basicstyle = \scriptsize\ttfamily,
+	stringstyle = \color{red}\ttfamily,
+	keywordstyle=\color{Blue}\bfseries,
+	identifierstyle=\ttfamily,
+	frame=single,
+	frameround=tttt,
+	numbers=none,
+	showstringspaces=false,
+	escapeinside={(*@}{@*)}
+}
+
+\lstdefinestyle{outputcode}{
+	language = bash,
+	backgroundcolor = \color{black},
+	basicstyle = \tiny\ttfamily\color{white},
+	stringstyle = \color{red}\ttfamily,
+	keywordstyle=\color{white}\bfseries,
+	identifierstyle=\ttfamily,
+	frameround=tttt,
+	numbers=none,
+	showstringspaces=false,
+	escapeinside={(*@}{@*)}
+}
+
+\newtcolorbox{myframe}[2][]{%
+  enhanced,colback=white,colframe=black,coltitle=black,
+  sharp corners,boxrule=0.4pt,
+  fonttitle=\itshape,
+  attach boxed title to top left={yshift=-0.3\baselineskip-0.4pt,xshift=2mm},
+  boxed title style={tile,size=minimal,left=0.5mm,right=0.5mm,
+    colback=white,before upper=\strut},
+  title=#2,#1
+}
+
+
+\begin{document}
+\maketitle
+
+\definecolor{lightblue}{rgb}{0.8,0.93,1.0} % color values Red, Green, Blue
+\definecolor{darkblue}{rgb}{0.4,0.3,1.0} % color values Red, Green, Blue
+\definecolor{Blue}{rgb}{0,0,1.0} % color values Red, Green, Blue
+\definecolor{darkgreen}{rgb}{0,0.7,0.2} % color values Red, Green, Blue
+\definecolor{Red}{rgb}{1,0,0} % color values Red, Green, Blue
+\definecolor{Pink}{rgb}{0.7,0,0.2}
+\definecolor{links}{HTML}{2A1B81}
+\definecolor{mydarkgreen}{HTML}{126215}
+
+\mathchardef\mhyphen="2D
+
+\newsavebox{\prt}
+\savebox{\prt}{
+  \begin{tikzpicture}
+    \draw[line width=0.5mm] (0, 0) -- (.2, -.2) -- (0, -.4);
+  \end{tikzpicture}
+}
+
+
+
+\newsavebox{\sta}
+\savebox{\sta}{
+\resizebox{0.4\textwidth}{!}{%
+  \begin{tikzpicture}
+	\node (1) {$=$};
+    \node (2) [below left = of 1] {$<id, 1>$};
+    \node (3) [below right = of 1] {$+$};
+    \node (4) [below left = of 3] {$<id, 2>$};
+    \node (5) [below right = of 3] {$*$};
+    \node (6) [below left = of 5] {$<id, 3>$};
+    \node (7) [below right = of 5] {$60$};
+    \path (1) edge  (2)
+          (1) edge  (3)
+          (3) edge  (4)
+          (3) edge  (5)
+          (5) edge  (6)
+          (5) edge  (7)
+    ;
+    
+  \end{tikzpicture}
+}}
+
+\newsavebox{\stb}
+\savebox{\stb}{
+\resizebox{0.4\textwidth}{!}{%
+  \begin{tikzpicture}
+	\node (1) {$=$};
+    \node (2) [below left = of 1] {$<id, 1>$};
+    \node (3) [below right = of 1] {$+$};
+    \node (4) [below left = of 3] {$<id, 2>$};
+    \node (5) [below right = of 3] {$*$};
+    \node (6) [below left = of 5] {$<id, 3>$};
+    \node (7) [below right = of 5] {\textbf{inttofloat}};
+    \node (8) [below       = of 7] {$60$};
+
+    \path (1) edge  (2)
+          (1) edge  (3)
+          (3) edge  (4)
+          (3) edge  (5)
+          (5) edge  (6)
+          (5) edge  (7)
+          (7) edge  (8)
+    ;
+    
+  \end{tikzpicture}
+}}
+
+\tikzstyle{init} = [draw=black, thick, fill=black, circle]
+\tikzstyle{tr} = [rectangle,draw=black, very thin, dashed,align=left,font=\scriptsize, text ragged, minimum height=1em, minimum width=2em, inner sep=1pt, outer sep=3pt]
+\tikzstyle{trl} = [->, thick, color=Purple, text=black]
+\tikzset{obj/.style = {rectangle split, rounded corners,
+		rectangle split parts=2, thick,draw=black, top
+		color=Dandelion!10,bottom color=Dandelion!20, align=center}}
+
+\tikzset{cobj/.style = {rectangle split, rounded corners,
+		rectangle split parts=3, thick,draw=black, top
+		color=white,bottom color=Dandelion!10, align=center}}
+
+\tikzset{sn/.style = {rectangle, draw=gray, fill=blue!10, thick, align=center, rounded corners}}
+\tikzset{sdn/.style = {ellipse, draw=gray, fill=red!10, thick, align=center}}
+\tikzset{st/.style = {-latex, draw=brown, thick}}
+
+\newcommand\Mstrut[1]{\rule{0pt}{#1cm}}
+
+
+\tikzstyle{ss} = [draw=gray, thick, fill=white, rounded corners, rectangle, inner sep=15pt]
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compilers}
+{Overview}
+
+\begin{center}
+
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (0) []             {Source \\ Code};
+    \node[bb]  (1) [right = of 0] {Compiler \\ (Translator)};
+    \node[inv] (2) [right = of 1] {Output \\ Code};
+
+    \path (0) edge (1)
+          (1) edge (2)
+    ;
+
+  \end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+\item Translates input program to output program
+\item Input program (source code ) in high-level language (e.g. C, Java, Python etc.)
+\item Output program (target code) in low-level language (e.g. machine code, assembly, byte-code etc.)
+\item Source code $\equiv$ Target code
+\end{itemize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (0) []             {Source \\ Code ($L_1$)};
+    \node[bb]  (1) [right = of 0] {Front \\ End};
+    \node[bb]  (2) [right = of 1] {Back \\ End};
+    \node[inv] (3) [right = of 2] {Output \\ Code ($L_2$)};
+\begin{small}
+    \path (0) edge (1)
+          (1) edge node[align=center] {IR}             (2)
+          (2) edge              (3)
+    ;
+
+\end{small}
+  \end{tikzpicture}
+}
+
+\end{center}
+\begin{itemize}
+\item Two functions:
+	\begin{enumerate}
+	\item Read source code and analyse for errors
+	\item Translate into the target code
+	\end{enumerate}
+\item Two parts:
+	\begin{enumerate}
+	\item Front end
+	\item Back end
+	\end{enumerate}
+\pause
+\item \textbf{Intermediate representation (IR)}
+	\begin{itemize}
+	\item  A data structure output from front end and input to the backend
+	\item Several phases; several IRs
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Front End}
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (inp) []             {Source \\ Code};
+    \node[bb]  (synan) [right = of inp] {Syntax \\ Analyser};
+    \node[bb]  (seman) [right = of synan] {Semantic \\ Analyser};
+    \node[bb]  (opt) [right = of seman] {Optimiser};
+    \node[bb]  (cg) [right = of opt] {Code \\ Generator};
+    \node[inv] (outp) [right = of cg] {Output \\ Code};
+
+\node[dashed, thick, draw=Gray, fit=(synan) (seman), minimum height=3cm] (fe) {};
+\node[inv, above=0.1cm of fe.south](lfe) {\textbf{\textsf{\color{Brown}Front End}}};
+
+\node[dashed, thick, draw=Gray, fill=Gray, fit=(opt) (cg), minimum height=3cm] (be) {};
+\node[inv, above=0.1cm of be.south](lbe) {\textbf{\textsf{\color{Brown}Back End}}};
+
+\begin{small}
+\draw[->] (inp) -- (synan);
+\draw[->] (synan) -- node[above]{IR1}(seman);
+\draw[->] (seman) -- node[above]{IR2}(opt);
+%\draw[->] (opt) -- node[above]{IR3}(cg);
+\draw[->] (cg) -- (outp);
+\end{small}
+  \end{tikzpicture}
+}
+\end{center}
+
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Syntax Analysis}
+
+\begin{itemize}
+\item \textbf{\color{BrickRed}Syntax errors:}
+	\begin{enumerate}
+	\item Example 1: \lstinline[style=javacode]|for i in range(10)|
+	\item Example 2: \lstinline[style=javacode]|void f(x) \{ ... \}|
+	\end{enumerate}
+\item When program doesn't follow grammatical constructs of the input PL
+\item \textbf{Well formed programs:} Programs with \emph{no} syntax errors
+\item \textbf{Ill formed programs:} Programs \emph{with} syntax errors
+\end{itemize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Syntax Analysis}
+
+\begin{center}
+\resizebox{!}{0.5\textheight}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (1)                {\lstinline@pos = init + r * 60@ \\ \tiny{$<$id, 1$>$ $<$=$>$ $<$id, 2$>$ $<$+$>$ $<$id, 3$>$ $<$*$>$ $<$60$>$}};
+    \node[bb]  (2) [below = of 1] {Syntax Analysis};
+    \node[inv] (3) [below = of 2] {\usebox{\sta}};
+
+    \path (1) edge  (2)
+          (2) edge  (3)
+    ;
+  \end{tikzpicture}
+}
+
+\end{center}
+
+\pause
+\begin{itemize}
+\item Successful syntax analysis $\longrightarrow$ Abstract syntax tree (AST)
+\item More details later
+\end{itemize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Lexical Analyser}
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (inp) []             {Source \\ Code};
+    \node[bb]  (lexan) [right = of inp] {Lexical \\ Analyser};
+    \node[bb]  (synan) [right = of lexan] {Syntax \\ Analyser};
+    \node[bb]  (seman) [right = of synan] {Semantic \\ Analyser};
+    \node[bb]  (opt) [right = of seman] {Optimiser};
+    \node[bb]  (cg) [right = of opt] {Code \\ Generator};
+    \node[inv] (outp) [right = of cg] {Output \\ Code};
+
+\node[dashed, thick, draw=Gray, fit=(lexan) (seman), minimum height=3cm] (fe) {};
+\node[inv, above=0.1cm of fe.south](lfe) {\textbf{\textsf{\color{Brown}Front End}}};
+
+\node[dashed, thick, draw=Gray, fill=Gray, fit=(opt) (cg), minimum height=3cm] (be) {};
+\node[inv, above=0.1cm of be.south](lbe) {\textbf{\textsf{\color{Brown}Back End}}};
+
+\begin{small}
+\draw[->] (inp) -- (lexan);
+\draw[->] (lexan) -- node[above]{tokens}(synan);
+\draw[->] (synan) -- node[above]{IR1}(seman);
+\draw[->] (seman) -- node[above]{IR2}(opt);
+%\draw[->] (opt) -- node[above]{IR3}(cg);
+\draw[->] (cg) -- (outp);
+\end{small}
+  \end{tikzpicture}
+}
+\end{center}
+
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Lexical Analysis}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (1)                {\lstinline@pos = init + r * 60@};
+    \node[bb]  (2) [below = of 1] {Lexical Analysis};
+    \node[inv] (3) [below = of 2] {$<$id, 1$>$ $<$=$>$ $<$id, 2$>$ $<$+$>$ $<$id, 3$>$ $<$*$>$ $<$60$>$};
+\begin{small}
+
+    \path (1) edge  (2)
+          (2) edge  (3)
+    ;
+
+\end{small}
+  \end{tikzpicture}
+}
+
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Compiler Structure}
+{Semantic Analysis -- Functions}
+
+\begin{enumerate}
+\item Variable binding:
+\begin{lstlisting}[style=camlcode]
+let x = 20 in
+let sum1 = 2 * x in
+let x = 100 and z = 5 in
+  sum1 - z + x
+\end{lstlisting}
+\item Type checking:
+\begin{lstlisting}[style=camlcode]
+void add(int x, int y) { return x + y; }
+add(1, 2);
+\end{lstlisting}
+\item Type checking:
+\begin{lstlisting}[style=camlcode]
+# let add x y = x + y;;
+val add : int -> int -> int = <fun>
+\end{lstlisting}
+\end{enumerate}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Compiler Structure}
+{Semantic Analysis -- Semantic errors}
+
+\begin{itemize}
+\item \textbf{\color{BrickRed}Semantic errors:} Error associated with the meaning of the program
+\item Natural language example:
+\begin{quote}
+Table goes to school.
+\end{quote}
+\pause
+\item \textbf{Ill-typed programs:} Well formed programs that don't make sense.
+\item Examples:
+	\begin{enumerate}
+	\item Example 1: \lstinline[style=javacode]|String s = 10;|
+	\item Example 2: \lstinline[style=javacode]|void f() \{ return x; \}|
+	\end{enumerate}
+\end{itemize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Semantic Analysis}
+
+
+\begin{center}
+\resizebox{!}{0.7\textheight}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (1)                {\usebox{\sta}};
+    \node[bb]  (2) [below = of 1] {Semantic Analyser};
+    \node[inv] (3) [below = of 2] {\usebox{\stb}};
+
+    \path (1) edge  (2)
+          (2) edge  (3)
+    ;
+  \end{tikzpicture}
+}
+
+\pause
+\begin{tikzpicture}
+\node[rectangle, draw=Red, fill=Red, minimum height=0.25cm](){};
+\end{tikzpicture}
+
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Next Module}
+\myheader{Compiler Backend}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Back End}
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (inp) []             {Source \\ Code};
+    \node[bb]  (synan) [right = of inp] {Syntax \\ Analyser};
+    \node[bb]  (seman) [right = of synan] {Semantic \\ Analyser};
+    \node[bb]  (opt) [right = of seman] {Optimiser};
+    \node[bb]  (cg) [right = of opt] {Code \\ Generator};
+    \node[inv] (outp) [right = of cg] {Output \\ Code};
+
+\node[dashed, thick, draw=Gray, fill=Gray, fit=(synan) (seman), minimum height=3cm] (fe) {};
+\node[inv, above=0.1cm of fe.south](lfe) {\textbf{\textsf{\color{Brown}Front End}}};
+
+\node[dashed, thick, draw=Gray, fit=(opt) (cg), minimum height=3cm] (be) {};
+\node[inv, above=0.1cm of be.south](lbe) {\textbf{\textsf{\color{Brown}Back End}}};
+
+\begin{small}
+\draw[->] (inp) -- (synan);
+%\draw[->] (synan) -- node[above]{IR1}(seman);
+\draw[->] (seman) -- node[above]{IR2}(opt);
+\draw[->] (opt) -- node[above]{IR3}(cg);
+\draw[->] (cg) -- (outp);
+\end{small}
+  \end{tikzpicture}
+}
+\end{center}
+
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Code Optimisation}
+
+\begin{center}
+\resizebox{!}{0.8\textheight}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+]
+    \node[inv, align=left] (1){
+    		\lstinline@t1 = inttofloat(60)@ \\ 
+    		\lstinline@t2 = id3 * t1@ \\
+    		\lstinline@t3 = id2 + t2@ \\ 
+    		\lstinline@id1 = t3@
+	};
+    \node[bb]  (2) [below = of 1] {Code Optimiser};
+    \node[inv] (3) [below = of 2] {
+    		\lstinline@t1 = id3 * 60.0@ \\
+    		\lstinline@id1 = id2 + t1@
+	};
+\begin{small}
+
+    \path (1) edge  (2)
+          (2) edge  (3)
+    ;
+
+\end{small}
+  \end{tikzpicture}
+}
+
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Compiler Structure}
+{Code Optimisation}
+
+\myheader{Example -- Loop optimisation}
+
+
+\begin{center}
+\begin{tabular}{c @{\hspace{0.5cm}$\Rightarrow$\hspace{0.5cm}} c} 
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[language=java, basicstyle=\scriptsize\ttfamily]
+for(int i = 0; i < N; i++) {
+  t = a + b;
+  sum += t + i;
+}
+\end{lstlisting}
+\end{minipage}
+&
+\begin{minipage}{0.45\textwidth}
+\begin{lstlisting}[language=java, basicstyle=\scriptsize\ttfamily]
+t = a + b;
+for(int i = 0; i < N; i++) {
+  sum += t + i;
+}
+\end{lstlisting}
+\end{minipage}
+\end{tabular}
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Code Optimisation}
+
+\begin{itemize}
+\item Numerous algorithms
+\item Local, global, interprocedural
+\item Control flow analysis, data flow analysis
+\item Machine independent and machine dependent
+\item ...
+\pause
+\item Largest and most complex module of modern compilers
+\item Active area of research
+\end{itemize}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Code Generation}
+
+\begin{center}
+\resizebox{!}{0.8\textheight}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+]
+    \node[inv, align=left] (1){
+    		\lstinline@t1 = id3 * 60.0@ \\
+    		\lstinline@id1 = id2 + t1@
+	};
+    \node[bb]  (2) [below = of 1] {Code Generator};
+    \node[inv, align=left] (3) [below = of 2] {
+    		\lstinline@LDF R2, id3@ \\
+    		\lstinline@MULF R2, R2, \#60.0@ \\
+    		\lstinline@LDF R1, id2@ \\
+    		\lstinline@ADDF R1, R1, R2@ \\
+    		\lstinline@STF id1, R1@ \\
+	};
+\begin{small}
+
+    \path (1) edge  (2)
+          (2) edge  (3)
+    ;
+
+\end{small}
+  \end{tikzpicture}
+}
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+{Code Generation}
+
+\myheader{Runtime Organisation}
+\begin{center}
+\resizebox{0.6\textwidth}{!}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+]
+\begin{small}
+\node[inv](lstack){\textsc{\textbf{\underline{Stack}}}};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of lstack] (a) {a};
+\node[rectangle, draw=Gray, dashed, thick, fit=(lstack)(a)] (stack) {};
+
+
+\node[inv, right=1cm of lstack](lheap){\textsc{\textbf{\underline{Heap}}}};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of lheap] (o) {o};
+\node[rectangle, draw=Gray, dashed, thick, fit=(lheap)(o), minimum height=2cm] (heap) {};
+
+\node[inv, right=1.5cm of lheap](lstatic){\textsc{\textbf{\underline{Static}}}};
+
+\node[inv, below left=0.1cm of lstatic, xshift=0.5cm](lA){\textsc{\textbf{\underline{A}}}};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of lA] (Am1) {$m_1$};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of Am1] (Am2) {$m_2$};
+\node[rectangle, draw=Brown, thick, fit=(lA) (Am2)] (A) {};
+
+\node[inv, below right=0.1cm of lstatic, xshift=-0.5cm](lB){\textsc{\textbf{\underline{B}}}};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of lB] (Bm1) {$m_1$};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of Bm1] (Bm2) {$m_2$};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of Bm2] (Bm3) {$m_3$};
+
+\node[rectangle, draw=Brown, thick, fit=(lB) (Bm3)] (B) {};
+
+\node[rectangle, draw=Gray, dashed, thick, fit=(lstatic) (A) (B)] (static) {};
+
+\node[inv, right=1.5cm of lstatic](lcode){\textsc{\textbf{\underline{Code}}}};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of lcode] (procAm1) {$A::m_1$};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of procAm1] (procAm2) {$A::m_2$};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of procAm2] (procBm1) {$B::m_1$};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of procBm1] (procBm2) {$B::m_2$};
+\node[rectangle, draw=Black, thick, minimum width=1cm, below=0.1cm of procBm2] (procBm3) {$B::m_3$};
+\node[rectangle, draw=Gray, dashed, thick, fit=(lcode) (procBm3)] (code) {};
+
+\draw[->, dotted] (a) -- (o);
+\draw[->, dotted, out=-90, in=-90] (o.south) to (B.south);
+\draw[->, dotted, in=0] (Am1) -- (procAm1);
+\draw[->, dotted, in=0] (Am2) -- (procAm2);
+\draw[->, dotted, in=0] (Bm1) -- (procBm1);
+\draw[->, dotted, in=0] (Bm2) -- (procBm2);
+\draw[->, dotted, in=0] (Bm3) -- (procBm3);
+
+\end{small}
+  \end{tikzpicture}
+}
+\end{center}
+
+\begin{scriptsize}
+\begin{itemize}
+\item Placement of various parts of the target code in the appropriate parts of the virtual memory
+\item Not everything generated statically
+\item Certain things have to be created by the target code at runtime.
+\end{itemize}
+\end{scriptsize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+
+\myheader{Register allocation}
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{images/reg-alloc.png}
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Compiler Structure}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+]
+    \node[inv] (0) []             {};
+    \node[bb]  (1) [right = of 0, xshift=1cm] {Lexical \\ Analysis};
+    \node[bb]  (2) [right = of 1, xshift=1cm] {Syntax \\ Analysis};
+    \node[bb]  (3) [right = of 2, xshift=1cm] {Semantic \\ Analysis};
+    \node[bb]  (4) [right = of 3, xshift=1cm] {Optimisation};
+    \node[bb]  (5) [right = of 4, xshift=1cm] {Code \\ Generation};
+    \node[inv] (6) [right = of 5, xshift=1cm] {};
+\begin{small}
+    \path (0) edge node[align=center] {Source \\ Code}     (1)
+          (1) edge node[align=center] {Tokens}             (2)
+          (2) edge node[align=center] {Abstract \\ Syntax} (3)
+          (3) edge node[align=center] {Annotated \\ IR}    (4)
+          (4) edge node[align=center] {Transformed \\ IR}  (5)
+          (5) edge node[align=center] {Generated \\ Code}  (6)
+    ;
+
+\end{small}
+  \end{tikzpicture}
+}
+
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Summary -- PLDI}
+{Applications}
+\begin{itemize}
+	\item Hardware synthesis
+	\item Database query interpreter
+	\item IDEs
+	\item Debuggers
+	\item Bug finders -- Lint, Valgrind
+\end{itemize}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Summary -- PLDI}
+{Why study PLDI}
+\begin{itemize}
+	\item Vibrant area of study -- new PLs everyday!
+	\item Sophisticated theory + Practical system building
+	\item Deeper knowledge of data-structures, algorithms, software design
+\end{itemize}
+
+\begin{center}
+\pause
+\begin{tikzpicture}
+\node[rectangle, draw=Red, fill=Red, minimum height=0.25cm](){};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

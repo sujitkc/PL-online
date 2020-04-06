@@ -1,0 +1,353 @@
+\documentclass{beamer}
+\usetheme{Antibes}
+\usepackage{xcolor, colortbl}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{alltt}
+\usepackage{tikz}
+\usepackage{framed}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{marvosym}
+\usepackage{crayola}
+\usepackage{mathpartir}
+\usepackage{tabularx}
+\usepackage[belowskip=-15pt,aboveskip=0pt]{caption}
+\usepackage[skins]{tcolorbox}
+\usepackage{multicol}
+\usetikzlibrary{positioning,shapes,arrows, backgrounds, fit, shadows}
+\usetikzlibrary{decorations.markings}
+%\usepackage{wasysym}
+%\usepackage{marvosym}
+\setbeamertemplate{footline}[frame number]
+%\usecolortheme{fly}
+\usefonttheme{serif}
+
+\title[Sujit]{Online Quiz 1}
+\author{Sujit Kumar Chakrabarti}
+\institute{IIITB}
+\date{IIIT-B}
+
+%\begin{document}
+%\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+%
+%\maketitle
+
+\definecolor{lightblue}{rgb}{0.8,0.93,1.0} % color values Red, Green, Blue
+\definecolor{darkblue}{rgb}{0.4,0.3,1.0} % color values Red, Green, Blue
+\definecolor{Blue}{rgb}{0,0,1.0} % color values Red, Green, Blue
+\definecolor{darkgreen}{rgb}{0,0.7,0.2} % color values Red, Green, Blue
+\definecolor{Red}{rgb}{1,0,0} % color values Red, Green, Blue
+\definecolor{Pink}{rgb}{0.7,0,0.2}
+\definecolor{links}{HTML}{2A1B81}
+\definecolor{mydarkgreen}{HTML}{126215}
+\newcommand{\highlight}[1]{{\color{Red}(#1)}}
+
+\newcommand{\myheader}[1]{
+	{\color{darkblue}
+		\begin{Large}
+			\begin{center}
+				{#1}
+			\end{center}
+		\end{Large}
+	}
+}
+\newcommand{\myminorheader}[1]{
+	{\color{BrickRed}
+		\begin{Large}
+			{\fontfamily{\sfdefault}\selectfont\textbf{#1}}
+		\end{Large}
+	}
+}
+
+%\tikzstyle{input} = [coordinate]
+%\tikzstyle{output} = [coordinate]
+
+
+\tikzstyle{bb}=[%
+      rectangle, draw=black, thick, fill=OliveGreen!30, drop shadow, align=center,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{inv}=[%
+      rectangle, draw=none,  align=center,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{db}=[%
+      ellipse, draw=black, thick, fill=pink, drop shadow, align=center,
+      text ragged, minimum height=2em, inner sep=6pt
+]
+
+\tikzstyle{jn}=[%
+      ellipse, draw=black, thick, fill=black
+]
+
+\tikzstyle{io}=[%
+      trapezium, trapezium left angle=60, trapezium right angle=120, draw=black, thick, fill=brown, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt, align=center
+]
+
+\tikzstyle{glio}=[%
+      trapezium, trapezium left angle=60, trapezium right angle=120, draw=red, line width = 1mm, fill=brown, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+\tikzstyle{gl}=[%
+      rectangle, draw=red, line width = 1mm, fill=lightblue, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{en}=[%
+      rectangle, draw=black, thick, fill=none,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{sh}=[%
+      rectangle, draw=gray, thick, fill=none, color = gray,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+
+\lstdefinestyle{javacode}{
+	language = Java,
+	basicstyle = \ttfamily\scriptsize,
+	stringstyle = \ttfamily,
+	keywordstyle=\color{Blue}\bfseries,
+	identifierstyle=\color{Pink},
+	commentstyle=\color{darkgreen},
+	frame=single,
+	frameround=tttt,
+%	numbers=left
+	mathescape=true,
+	showstringspaces=false
+}
+
+\lstdefinestyle{camlcode}{
+	language = Caml,
+	basicstyle = \scriptsize\ttfamily,
+	stringstyle = \color{red}\ttfamily,
+	keywordstyle=\color{Blue}\bfseries,
+	identifierstyle=\ttfamily,
+	frame=single,
+	frameround=tttt,
+	numbers=none,
+	showstringspaces=false,
+	mathescape=true,
+	escapeinside={(*@}{@*)}
+}
+
+\lstdefinestyle{outputcode}{
+	language = bash,
+	backgroundcolor = \color{black},
+	basicstyle = \tiny\ttfamily\color{white},
+	stringstyle = \color{red}\ttfamily,
+	keywordstyle=\color{white}\bfseries,
+	identifierstyle=\ttfamily,
+	frameround=tttt,
+	numbers=none,
+	showstringspaces=false,
+	mathescape=true,
+	escapeinside={(*@}{@*)}
+}
+
+\newtcolorbox{myframe}[2][]{%
+  enhanced,colback=white,colframe=black,coltitle=black,
+  sharp corners,boxrule=0.4pt,
+  fonttitle=\itshape,
+  attach boxed title to top left={yshift=-0.3\baselineskip-0.4pt,xshift=2mm},
+  boxed title style={tile,size=minimal,left=0.5mm,right=0.5mm,
+    colback=white,before upper=\strut},
+  title=#2,#1
+}
+
+\begin{document}
+\maketitle
+
+\definecolor{lightblue}{rgb}{0.8,0.93,1.0} % color values Red, Green, Blue
+\definecolor{darkblue}{rgb}{0.4,0.3,1.0} % color values Red, Green, Blue
+\definecolor{Blue}{rgb}{0,0,1.0} % color values Red, Green, Blue
+\definecolor{darkgreen}{rgb}{0,0.7,0.2} % color values Red, Green, Blue
+\definecolor{Red}{rgb}{1,0,0} % color values Red, Green, Blue
+\definecolor{Pink}{rgb}{0.7,0,0.2}
+\definecolor{links}{HTML}{2A1B81}
+\definecolor{mydarkgreen}{HTML}{126215}
+
+\mathchardef\mhyphen="2D
+
+\newsavebox{\prt}
+\savebox{\prt}{
+  \begin{tikzpicture}
+    \draw[line width=0.5mm] (0, 0) -- (.2, -.2) -- (0, -.4);
+  \end{tikzpicture}
+}
+
+
+
+\newsavebox{\sta}
+\savebox{\sta}{
+\resizebox{0.4\textwidth}{!}{%
+  \begin{tikzpicture}
+	\node (1) {$=$};
+    \node (2) [below left = of 1] {$<id, 1>$};
+    \node (3) [below right = of 1] {$+$};
+    \node (4) [below left = of 3] {$<id, 2>$};
+    \node (5) [below right = of 3] {$*$};
+    \node (6) [below left = of 5] {$<id, 3>$};
+    \node (7) [below right = of 5] {$60$};
+    \path (1) edge  (2)
+          (1) edge  (3)
+          (3) edge  (4)
+          (3) edge  (5)
+          (5) edge  (6)
+          (5) edge  (7)
+    ;
+    
+  \end{tikzpicture}
+}}
+
+\newsavebox{\stb}
+\savebox{\stb}{
+\resizebox{0.4\textwidth}{!}{%
+  \begin{tikzpicture}
+	\node (1) {$=$};
+    \node (2) [below left = of 1] {$<id, 1>$};
+    \node (3) [below right = of 1] {$+$};
+    \node (4) [below left = of 3] {$<id, 2>$};
+    \node (5) [below right = of 3] {$*$};
+    \node (6) [below left = of 5] {$<id, 3>$};
+    \node (7) [below right = of 5] {\textbf{inttofloat}};
+    \node (8) [below       = of 7] {$60$};
+
+    \path (1) edge  (2)
+          (1) edge  (3)
+          (3) edge  (4)
+          (3) edge  (5)
+          (5) edge  (6)
+          (5) edge  (7)
+          (7) edge  (8)
+    ;
+    
+  \end{tikzpicture}
+}}
+
+\tikzstyle{init} = [draw=black, thick, fill=black, circle]
+\tikzstyle{tr} = [rectangle,draw=black, very thin, dashed,align=left,font=\scriptsize, text ragged, minimum height=1em, minimum width=2em, inner sep=1pt, outer sep=3pt]
+\tikzstyle{trl} = [->, thick, color=Purple, text=black]
+\tikzset{obj/.style = {rectangle split, rounded corners,
+		rectangle split parts=2, thick,draw=black, top
+		color=Dandelion!10,bottom color=Dandelion!20, align=center}}
+
+\tikzset{cobj/.style = {rectangle split, rounded corners,
+		rectangle split parts=3, thick,draw=black, top
+		color=white,bottom color=Dandelion!10, align=center}}
+
+\tikzset{sn/.style = {rectangle, draw=gray, fill=blue!10, thick, align=center, rounded corners}}
+\tikzset{sdn/.style = {ellipse, draw=gray, fill=red!10, thick, align=center}}
+\tikzset{st/.style = {-latex, draw=brown, thick}}
+
+\newcommand\Mstrut[1]{\rule{0pt}{#1cm}}
+
+
+\tikzstyle{ss} = [draw=gray, thick, fill=white, rounded corners, rectangle, inner sep=15pt]
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Quiz 1}
+
+
+What is wrong with the following code? What kind of error (lexical/syntax/semantic) is it?
+\begin{lstlisting}[style=javacode]
+if(x == 0) {
+  return true;
+}
+return false;
+else {
+  return false;
+}
+\end{lstlisting}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Quiz 1}
+
+What is wrong with the following code? What kind of error (lexical/syntax/semantic) is it?
+\begin{lstlisting}[style=javacode]
+/* This is a comment which has not been closed
+
+int x = 10;
+\end{lstlisting}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Quiz 1}
+
+
+What is wrong with the following code? What kind of error (lexical/syntax/semantic) is it?\begin{lstlisting}[style=javacode]
+int f(int x) { return; }
+\end{lstlisting}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Quiz 1}
+
+
+What is wrong with the following code? What kind of error (lexical/syntax/semantic) is it?\begin{lstlisting}[style=javacode]
+
+int f(int x) {
+  if(x == 1) {
+    String x = "IIITB";
+    return x + 1;
+  }
+  return x;
+}
+\end{lstlisting}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Quiz 1}
+
+
+What is wrong with the following code? What kind of error (syntax/semantic) is it?\begin{lstlisting}[style=javacode]
+int f(int x) { return; }
+\end{lstlisting}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Quiz 1}
+
+Can you spot a scope of improving the following code for efficiency? If yes, please provide the transformed code.
+
+\begin{lstlisting}[style=javacode]
+y = x * 2;
+y *= 8;
+\end{lstlisting}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]{Quiz 1}
+
+Can you spot a scope of improving the following code for efficiency? If yes, please provide the transformed code.
+
+\begin{lstlisting}[style=javacode]
+int x = 10;
+if($C$) {
+  x = x * 2;
+}
+else {
+  x = x + 10;
+}
+int y = x + 100;
+\end{lstlisting}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
