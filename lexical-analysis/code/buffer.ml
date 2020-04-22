@@ -15,16 +15,16 @@ let from_string s =
   buffer
 
 let from_file fname =
-  let fin = open_in fname in
+  let fin      = open_in fname in
   let line_pos = ref 0 in
-  let line = ref "" in
+  let line     = ref "" in
   let buffer () =
     try
       (* Has read past the end of line *)
       if !line_pos = String.length !line then
       begin
         line_pos := 0;
-        line := (input_line fin);
+        line     := (input_line fin);
         let c = (!line).[!line_pos] in
         begin
           line_pos := !line_pos + 1;
@@ -46,6 +46,5 @@ let from_file fname =
         close_in fin;
         raise End_of_buffer
       end
-    | _ -> failwith "Unknown error!"
   in
   buffer
