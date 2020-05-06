@@ -1,0 +1,907 @@
+\documentclass{beamer}
+\usetheme{Antibes}
+\usepackage{xcolor, colortbl}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{alltt}
+\usepackage{tikz}
+\usepackage{framed}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{marvosym}
+\usepackage{crayola}
+\usepackage{mathpartir}
+\usepackage{tabularx}
+\usepackage[belowskip=-15pt,aboveskip=0pt]{caption}
+\usepackage[skins]{tcolorbox}
+\usepackage{multicol}
+\usetikzlibrary{positioning,shapes,arrows, backgrounds, fit, shadows, automata}
+\usetikzlibrary{decorations.markings}
+%\usepackage{wasysym}
+%\usepackage{marvosym}
+\setbeamertemplate{footline}[frame number]
+%\usecolortheme{fly}
+\usefonttheme{serif}
+
+\title[Sujit]{Parsing}
+\author{Sujit Kumar Chakrabarti}
+\institute{IIITB}
+\date{}
+\begin{document}
+\maketitle
+
+\definecolor{lightblue}{rgb}{0.8,0.93,1.0} % color values Red, Green, Blue
+\definecolor{darkblue}{rgb}{0,0,0.5} % color values Red, Green, Blue
+\definecolor{Blue}{rgb}{0,0,1.0} % color values Red, Green, Blue
+\definecolor{darkgreen}{rgb}{0,0.7,0.2} % color values Red, Green, Blue
+\definecolor{Red}{rgb}{1,0,0} % color values Red, Green, Blue
+\definecolor{Pink}{rgb}{0.7,0,0.2}
+\definecolor{links}{HTML}{2A1B81}
+\definecolor{mydarkgreen}{HTML}{126215}
+\definecolor{mychoco}{HTML}{5C3317}
+
+\newcommand{\myheader}[1]{
+	{\color{purple}
+		\begin{Large}
+			\begin{center}
+				{#1}
+			\end{center}
+		\end{Large}
+	}
+}
+\newcommand{\myminorheader}[1]{
+	{\color{purple}
+		\begin{large}
+			{#1}
+		\end{large}
+	}
+}
+
+\newcommand{\myprod}[0]{\hspace{0.5cm}$\rightarrow$\hspace{0.5cm}}
+\newcommand{\mychoice}[0]{\hspace{0.75cm}$|$\hspace{0.25cm}}
+\newcommand{\myderiv}[0]{\hspace{0.5cm}$\Rightarrow$\hspace{0.5cm}}
+
+
+\tikzstyle{bb}=[%
+      rectangle, draw=black, thick, fill=OliveGreen!30, drop shadow, align=center,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{inv}=[%
+      rectangle, draw=none,  align=center,
+      text ragged, minimum height=2em, minimum width=2em, align=center, inner sep=6pt
+]
+
+\tikzstyle{db}=[%
+      ellipse, draw=black, thick, fill=pink, drop shadow, align=center,
+      text ragged, minimum height=2em, inner sep=6pt
+]
+
+\tikzstyle{jn}=[%
+      inner sep=0cm, outer sep=0cm
+]
+
+\tikzstyle{io}=[%
+      trapezium, trapezium left angle=60, trapezium right angle=120, draw=black, thick, fill=brown, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt, align=center
+]
+
+\tikzstyle{glio}=[%
+      trapezium, trapezium left angle=60, trapezium right angle=120, draw=red, line width = 1mm, fill=brown, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+\tikzstyle{gl}=[%
+      rectangle, draw=red, line width = 1mm, fill=lightblue, drop shadow,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{en}=[%
+      rectangle, draw=black, thick, fill=none,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+\tikzstyle{sh}=[%
+      rectangle, draw=gray, thick, fill=none, color = gray,
+      text ragged, minimum height=2em, minimum width=2em, inner sep=6pt
+]
+
+
+
+\lstset{
+	language = Caml,
+	basicstyle = \ttfamily,
+	stringstyle = \ttfamily,
+	keywordstyle=\color{blue}\bfseries,
+	identifierstyle=\color{mychoco},
+	commentstyle=\color{darkgreen},
+	frameround=tttt,
+%	numbers=left,
+	showstringspaces=false
+}
+\mathchardef\mhyphen="2D
+
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+
+\pause
+\begin{itemize}
+	\item Appropriate for manual implementation
+	\item Top-down parsing
+	\item Starts with the root
+	\item Prepares the parse tree in pre-order depth first sequence
+	\item Finds the \textit{leftmost derivation} for a string
+	\item LL($k$) Grammars
+\end{itemize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Leftmost and Rightmost Derivation}
+
+\textbf{Grammar:} \\
+\begin{tabular}{l @{} c @{} l}
+$E$        & {\myprod}   & $E$ + $E$ $|$ ($E$) $|$ \textbf{id}
+\end{tabular}
+
+\textbf{Example:} \\
+1 + (2 + 3) $\rightarrow$ $\textbf{id}_1$ + $\textbf{id}_2$ + $\textbf{Id}_3$
+
+\vspace*{1cm}
+\begin{tabular}{c @{} c}
+
+\textbf{\color{blue}Leftmost Derivation} & \textbf{\color{blue}Rightmost Derivation} \\
+\hline
+\begin{minipage}{0.5\textwidth}
+\begin{tabular}{l @{} c @{} l}
+$E$     & \pause{\myderiv}   & $E$ + $E$                                             \\
+        & \pause{\myderiv}   & $\textbf{id}_1$ + $E$                                 \\
+        & \pause{\myderiv}   & $\textbf{id}_1$ + ($E$)                               \\
+        & \pause{\myderiv}   & $\textbf{id}_1$ + ($E$ + $E$)                         \\
+        & \pause{\myderiv}   & $\textbf{id}_1$ + ($\textbf{id}_2$ + $E$)             \\
+        & \pause{\myderiv}   & $\textbf{id}_1$ + ($\textbf{id}_2$ + $\textbf{id}_3$)
+\end{tabular}
+\end{minipage}
+&
+\begin{minipage}{0.5\textwidth}
+\begin{tabular}{l @{} c @{} l}
+$E$     & \pause{\myderiv}   & $E$ + $E$                                             \\
+        & \pause{\myderiv}   & $E$ + ($E$)                                           \\
+        & \pause{\myderiv}   & $E$ + ($E$ + $E$)                                     \\
+        & \pause{\myderiv}   & $E$ + ($E$ + $\textbf{id}_3$)                         \\
+        & \pause{\myderiv}   & $E$ + ($\textbf{id}_2$ + $\textbf{id}_3$)                         \\
+        & \pause{\myderiv}   & $\textbf{id}_1$ + ($\textbf{id}_2$ + $\textbf{id}_3$)
+\end{tabular}
+\end{minipage}
+
+\end{tabular}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Leftmost and Rightmost Derivation}
+
+\myheader{Formation of Parse Tree with Leftmost Derivation}
+\begin{center}
+\resizebox{!}{0.5\textheight}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+    bb/.style={%
+      rectangle, draw=black, very thick, fill=white,
+      text ragged, minimum height=2em, inner sep=6pt, align=center
+    },
+    inv/.style={%
+      rectangle, draw=none, fill=white,
+      text ragged, minimum height=2em, inner sep=6pt, align=center
+    },
+    cinv/.style={%
+      rectangle, draw=none, fill=white, text=white,
+      text ragged, minimum height=2em, inner sep=6pt, align=center
+    }
+]
+    \node[inv] (1)                        {$E$};
+    \onslide<2->\node[inv] (2)  [below left = of 1]   {$E$};
+    \onslide<2->\node[inv] (3)  [below = of 1]  {+};
+    \onslide<2->\node[inv] (4)  [below right = of 1]  {$E$};
+
+    \path (1) edge node {}  (2)
+          (1) edge node {}  (3)
+		  (1) edge node {}  (4)
+	;
+
+    \onslide<3->\node[inv] (5)  [below = of 2]  {$\textbf{id}_1$};
+	\path (2) edge node {}  (5)
+	;
+
+    \onslide<4->\node[inv] (6)  [below left = of 4]  {(};
+    \onslide<4->\node[inv] (7)  [below = of 4]  {$E$};
+    \onslide<4->\node[inv] (8)  [below right = of 4]  {)};
+	\path (4) edge node {}  (6)
+		  (4) edge node {}  (7)
+		  (4) edge node {}  (8)
+	;
+
+    \onslide<5->\node[inv] (9)  [below left = of 7]  {$E$};
+    \onslide<5->\node[inv] (10)  [below = of 7]  {+};
+    \onslide<5->\node[inv] (11)  [below right = of 7]  {$E$};
+	\path (7) edge node {}  (9)
+		  (7) edge node {}  (10)
+		  (7) edge node {}  (11)
+	;
+
+    \onslide<6->\node[inv] (12)  [below = of 9]  {$\textbf{id}_2$};
+	\path  (9) edge node {}  (12)
+	;
+
+    \onslide<7->\node[inv] (13)  [below = of 11]  {$\textbf{id}_3$};
+	\path  (11) edge node {}  (13)
+    ;
+
+  \end{tikzpicture}
+
+}
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Leftmost and Rightmost Derivation}
+
+\myheader{Formation of Parse Tree with Rightmost Derivation}
+\begin{center}
+\resizebox{!}{0.5\textheight}{%
+\begin{tikzpicture}[auto,
+    ->,
+  %  shorten >=2pt,
+    >=stealth,
+  %  node distance=1cm,
+    bb/.style={%
+      rectangle, draw=black, very thick, fill=white,
+      text ragged, minimum height=2em, inner sep=6pt, align=center
+    },
+    inv/.style={%
+      rectangle, draw=none, fill=white,
+      text ragged, minimum height=2em, inner sep=6pt, align=center
+    },
+    cinv/.style={%
+      rectangle, draw=none, fill=white, text=white,
+      text ragged, minimum height=2em, inner sep=6pt, align=center
+    }
+]
+    \node[inv] (1)                        {$E$};
+    \onslide<2->\node[inv] (2)  [below left = of 1]   {$E$};
+    \onslide<2->\node[inv] (3)  [below = of 1]  {+};
+    \onslide<2->\node[inv] (4)  [below right = of 1]  {$E$};
+
+    \path (1) edge node {}  (2)
+          (1) edge node {}  (3)
+		  (1) edge node {}  (4)
+	;
+
+    \onslide<7->\node[inv] (5)  [below = of 2]  {$\textbf{id}_1$};
+	\path (2) edge node {}  (5)
+	;
+
+    \onslide<3->\node[inv] (6)  [below left = of 4]  {(};
+    \onslide<3->\node[inv] (7)  [below = of 4]  {$E$};
+    \onslide<3->\node[inv] (8)  [below right = of 4]  {)};
+	\path (4) edge node {}  (6)
+		  (4) edge node {}  (7)
+		  (4) edge node {}  (8)
+	;
+
+    \onslide<4->\node[inv] (9)  [below left = of 7]  {$E$};
+    \onslide<4->\node[inv] (10)  [below = of 7]  {+};
+    \onslide<4->\node[inv] (11)  [below right = of 7]  {$E$};
+	\path (7) edge node {}  (9)
+		  (7) edge node {}  (10)
+		  (7) edge node {}  (11)
+	;
+
+    \onslide<6->\node[inv] (12)  [below = of 9]  {$\textbf{id}_2$};
+	\path  (9) edge node {}  (12)
+	;
+
+    \onslide<5->\node[inv] (13)  [below = of 11]  {$\textbf{id}_3$};
+	\path  (11) edge node {}  (13)
+    ;
+
+  \end{tikzpicture}
+
+}
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking -- Example}
+
+\begin{tabular}{c @{\hspace{1cm}} c}
+\myminorheader{Grammar:} & \myminorheader{Input string:} \\
+
+\begin{minipage}{0.4\textwidth}
+
+\begin{tabular}{l @{} c @{} l}
+$S$ & {\myprod} & $c\ A\ d$ \\
+$A$ & {\myprod} & $a\ b$    \\
+$A$ & {\myprod} & $a$
+\end{tabular}
+
+\end{minipage}
+&
+\begin{minipage}{0.4\textwidth}
+\begin{tabular}{l @{} c @{} l}
+
+$w$ = \texttt{"cad"}
+\end{tabular}
+\end{minipage}
+\end{tabular}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking -- Example}
+
+\begin{center}
+\begin{tabular}{c @{\hspace{1cm}} c}
+\myminorheader{Grammar:} & \myminorheader{Input string:} \\
+
+\begin{minipage}{0.4\textwidth}
+
+\begin{tabular}{l @{} c @{} l}
+$S$ & {\myprod} & $c\ A\ d$ \\
+$A$ & {\myprod} & $a\ b$    \\
+$A$ & {\myprod} & $a$
+\end{tabular}
+
+\end{minipage}
+&
+\begin{minipage}{0.4\textwidth}
+\begin{tabular}{l @{} c @{} l}
+
+$w$ = \texttt{"{\color{Red}\textbf{c}}ad"}
+\end{tabular}
+\end{minipage}
+\end{tabular}
+\end{center}
+
+\myminorheader{Step 1:}
+
+\begin{center}
+\resizebox{0.3\textwidth}{!}{
+\begin{tikzpicture}
+\node[inv] (S) {${\color{Red}\textbf{S}}$};
+\node[inv, below left = of S] (c) {${\color{Red}\textbf{c}}$};
+\node[inv, below = of S] (A) {$A$};
+\node[inv, below right = of S] (d) {$d$};
+
+\draw[->, Blue](S) -- (c);
+\draw[->, Blue](S) -- (A);
+\draw[->, Blue](S) -- (d);
+
+\end{tikzpicture}
+}
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking -- Example}
+
+\begin{center}
+\begin{tabular}{c @{\hspace{1cm}} c}
+\myminorheader{Grammar:} & \myminorheader{Input string:} \\
+
+\begin{minipage}{0.4\textwidth}
+
+\begin{tabular}{l @{} c @{} l}
+$S$ & {\myprod} & $c\ A\ d$ \\
+$A$ & {\myprod} & $a\ b$    \\
+$A$ & {\myprod} & $a$
+\end{tabular}
+
+\end{minipage}
+&
+\begin{minipage}{0.4\textwidth}
+\begin{tabular}{l @{} c @{} l}
+
+$w$ = \texttt{"c{\color{Red}\textbf{a}}d"}
+\end{tabular}
+\end{minipage}
+\end{tabular}
+\end{center}
+
+%\vspace{1cm}
+\myminorheader{Step 2:}
+\begin{center}
+\resizebox{0.3\textwidth}{!}{
+\begin{tikzpicture}
+\node[inv] (S) {${\color{Red}\textbf{S}}$};
+\node[inv, below left = of S] (c) {$c$};
+\node[inv, below = of S] (A) {${\color{Red}\textbf{A}}$};
+\node[inv, below right = of S] (d) {$d$};
+\node[inv, below left = of A] (a) {${\color{Red}\textbf{a}}$};
+\node[inv, below right = of A] (b) {b};
+
+\draw[->, Blue](S) -- (c);
+\draw[->, Blue](S) -- (A);
+\draw[->, Blue](S) -- (d);
+\draw[->, Blue](A) -- (a);
+\draw[->, Blue](A) -- (b);
+
+\end{tikzpicture}
+}
+\end{center}
+
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking -- Example}
+
+\begin{center}
+\begin{tabular}{c @{\hspace{1cm}} c}
+\myminorheader{Grammar:} & \myminorheader{Input string:} \\
+
+\begin{minipage}{0.4\textwidth}
+
+\begin{tabular}{l @{} c @{} l}
+$S$ & {\myprod} & $c\ A\ d$ \\
+$A$ & {\myprod} & $a\ b$    \\
+$A$ & {\myprod} & $a$
+\end{tabular}
+
+\end{minipage}
+&
+\begin{minipage}{0.4\textwidth}
+\begin{tabular}{l @{} c @{} l}
+
+$w$ = \texttt{"ca{\color{Red}\textbf{d}}"}
+\end{tabular}
+\end{minipage}
+\end{tabular}
+\end{center}
+
+\myminorheader{Step 3:}
+\begin{center}
+\resizebox{0.5\textwidth}{!}{
+\begin{tikzpicture}
+\node[inv] (S) {${\color{Red}\textbf{S}}$};
+\node[inv, below left = of S] (c) {$c$};
+\node[inv, below = of S] (A) {${\color{Red}\textbf{A}}$};
+\node[inv, below right = of S] (d) {$d$};
+\node[inv, below left = of A] (a) {$a$};
+\node[inv, below right = of A] (b) {${\color{Red}\textbf{b}}$};
+
+
+\draw[->, Blue](S) -- (c);
+\draw[->, Blue](S) -- (A);
+\draw[->, Blue](S) -- (d);
+\draw[->, Blue](A) -- (a);
+\draw[->, Blue](A) -- (b);
+
+\node[inv, right = of d] (failure) {${\color{Red}\textbf{Failure}}$};
+
+\end{tikzpicture}
+}
+
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking -- Example}
+
+\begin{center}
+\begin{tabular}{c @{\hspace{1cm}} c}
+\myminorheader{Grammar:} & \myminorheader{Input string:} \\
+
+\begin{minipage}{0.4\textwidth}
+
+\begin{tabular}{l @{} c @{} l}
+$S$ & {\myprod} & $c\ A\ d$ \\
+$A$ & {\myprod} & $a\ b$    \\
+$A$ & {\myprod} & $a$
+\end{tabular}
+
+\end{minipage}
+&
+\begin{minipage}{0.4\textwidth}
+\begin{tabular}{l @{} c @{} l}
+
+$w$ = \texttt{"c{\color{Red}\textbf{a}}d"}
+\end{tabular}
+\end{minipage}
+\end{tabular}
+\end{center}
+
+\myminorheader{Step 4:}
+\begin{center}
+\resizebox{0.5\textwidth}{!}{
+\begin{tikzpicture}
+\node[inv] (S) {${\color{Red}\textbf{S}}$};
+\node[inv, below left = of S] (c) {$c$};
+\node[inv, below = of S] (A) {${\color{Red}\textbf{A}}$};
+\node[inv, below right = of S] (d) {$d$};
+\node[inv, below = of A] (a) {${\color{Red}\textbf{a}}$};
+
+
+\draw[->, Blue](S) -- (c);
+\draw[->, Blue](S) -- (A);
+\draw[->, Blue](S) -- (d);
+\draw[->, Blue](A) -- (a);
+
+\node[inv, right = of d] (backtracking) {${\color{Red}\textbf{Backtracking}}$};
+
+\end{tikzpicture}
+}
+
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking -- Example}
+
+\begin{center}
+\begin{tabular}{c @{\hspace{1cm}} c}
+\myminorheader{Grammar:} & \myminorheader{Input string:} \\
+
+\begin{minipage}{0.4\textwidth}
+
+\begin{tabular}{l @{} c @{} l}
+$S$ & {\myprod} & $c\ A\ d$ \\
+$A$ & {\myprod} & $a\ b$    \\
+$A$ & {\myprod} & $a$
+\end{tabular}
+
+\end{minipage}
+&
+\begin{minipage}{0.4\textwidth}
+\begin{tabular}{l @{} c @{} l}
+
+$w$ = \texttt{"ca{\color{Red}\textbf{d}}"}
+\end{tabular}
+\end{minipage}
+\end{tabular}
+\end{center}
+
+\myminorheader{Step 5:}
+\begin{center}
+\resizebox{0.5\textwidth}{!}{
+\begin{tikzpicture}
+\node[inv] (S) {${\color{Red}\textbf{S}}$};
+\node[inv, below left = of S] (c) {$c$};
+\node[inv, below = of S] (A) {$A$};
+\node[inv, below right = of S] (d) {${\color{Red}\textbf{d}}$};
+\node[inv, below = of A] (a) {$a$};
+
+
+\draw[->, Blue](S) -- (c);
+\draw[->, Blue](S) -- (A);
+\draw[->, Blue](S) -- (d);
+\draw[->, Blue](A) -- (a);
+
+\node[inv, right = of d] (success) {${\color{Red}\textbf{Success}}$};
+
+\end{tikzpicture}
+}
+
+\end{center}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking}
+\begin{scriptsize}
+\begin{algorithmic}[0]
+\Procedure{$S$}{$pos$}
+  \If {\Call {match}{$pos$,'c'}}
+    \If {\Call {$A_1$}{$pos + 1$}}
+      \If {match($pos + 3$, 'd')}
+        \State \textbf{return} \textbf{true}
+      \Else
+        \State \textbf{return} \texttt{false}
+      \EndIf
+    \ElsIf {(\Call {$A_2$} {$pos + 1$})}
+      \If{\Call {match} {($pos + 2$, 'd')}}
+        \State \textbf{return} \texttt{true}
+      \EndIf
+    \EndIf
+  \Else
+    \State \textbf{return} \texttt{false}
+  \EndIf
+\EndProcedure
+\end{algorithmic}
+%\end{multicols}
+\end{scriptsize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking}
+\begin{scriptsize}
+\begin{algorithmic}[0]
+\Procedure{$A_1$}{$pos$} 
+  \If{\Call{match}{$pos$, 'a'} and \Call{match}{$pos + 1$, 'b'}}
+    \State \textbf{return} \texttt{true}
+  \Else
+    \State \textbf{return} \texttt{false}
+  \EndIf
+\EndProcedure
+\Statex
+\Procedure{$A_2$}{$pos$} 
+  \If{\Call{match}{pos, 'a'}}
+    \State \textbf{return} \texttt{true}
+  \Else
+    \State \textbf{return} \texttt{false}
+  \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{scriptsize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{With backtracking}
+
+\begin{itemize}
+\item Powerful algorithm
+\item Backtracking
+\item Back and forth movement of input pointer
+\item May lead to inefficiency and complexity
+\end{itemize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{Predictive Parsing -- Example}
+
+\textbf{\color{purple}Grammar:} \\
+\begin{tabular}{l @{} c @{} l}
+$E$        & {\myprod}   & \textbf{num} $E'$                      \\
+$E'$       & {\myprod}   & + $E$ $E'$ $|$ $\epsilon$
+\end{tabular}
+
+\vspace{0.5cm}
+\textbf{\color{purple}Example:} \\
+1 + 2 + 3 $\rightarrow$ $\textbf{num}_1$ + $\textbf{num}_2$ + $\textbf{num}_3$
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{Predictive Parsing -- Example}
+
+\begin{tabular}{c@{\hspace{1cm}}c}
+\begin{minipage}{0.4\textwidth}
+\textbf{\color{purple}Grammar:} \\
+\begin{tabular}{l @{} c @{} l}
+$E$        & {\myprod}   & \textbf{num} $E'$                      \\
+$E'$       & {\myprod}   & + $E$ $E'$ $|$ $\epsilon$
+\end{tabular}
+
+\vspace{0.5cm}
+\textbf{\color{purple}Example:} \\
+$\textbf{num}_1$ + $\textbf{num}_2$ + $\textbf{num}_3$
+\end{minipage}
+&
+\begin{minipage}{0.5\textwidth}
+\begin{framed}
+\resizebox{!}{0.75\textheight}{
+\begin{tikzpicture}
+\node[inv](e1){$E$};
+
+\pause
+
+\node[inv, below left = of e1](n1){$n_1$};
+\node[inv, below right = of e1](ed1){$E'$};
+
+\draw[->, blue] (e1) -- (n1);
+\draw[->, blue] (e1) -- (ed1);
+
+\pause
+
+\node[inv, below left = of ed1](p1){$+$};
+\node[inv, below = of ed1](e2){$E$};
+\node[inv, below right = of ed1, xshift = 1cm](ed2){$E'$};
+
+\draw[->, blue] (ed1) -- (p1);
+\draw[->, blue] (ed1) -- (e2);
+\draw[->, blue] (ed1) -- (ed2);
+
+\pause
+
+\node[inv, below left = of e2](n2){$n_2$};
+\node[inv, below right = of e2](ed3){$E'$};
+
+\draw[->, blue] (e2) -- (n2);
+\draw[->, blue] (e2) -- (ed3);
+
+\pause
+
+\node[inv, below left = of ed3](p2){$+$};
+\node[inv, below = of ed3](e3){$E$};
+\node[inv, below right = of ed3, xshift = 1cm](ed4){$E'$};
+
+\draw[->, blue] (ed3) -- (p2);
+\draw[->, blue] (ed3) -- (e3);
+\draw[->, blue] (ed3) -- (ed4);
+
+\pause
+
+\node[inv, below left = of e3](n3){$n_3$};
+\node[inv, below right = of e3](ed5){$E'$};
+
+\draw[->, blue] (e3) -- (n3);
+\draw[->, blue] (e3) -- (ed5);
+
+\pause
+
+\node[inv, below = of ed5](ep1){$\epsilon$};
+\draw[->, blue] (ed5) -- (ep1);
+
+\pause
+
+\node[inv, below = of ed4](ep2){$\epsilon$};
+\draw[->, blue] (ed4) -- (ep2);
+
+\pause
+
+\node[inv, below = of ed2](ep3){$\epsilon$};
+\draw[->, blue] (ed2) -- (ep3);
+
+\end{tikzpicture}
+}
+\end{framed}
+\end{minipage}
+\end{tabular}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{Algorithm}
+
+\textbf{\color{purple}Grammar:} \\
+\begin{tabular}{l @{} c @{} l}
+$E$        & {\myprod}   & \textbf{num} $E'$                      \\
+$E'$       & {\myprod}   & + $E$ $E'$ $|$ $\epsilon$
+\end{tabular}
+\pause
+
+\vspace{0.5cm}
+\begin{tiny}
+
+\begin{framed}
+\begin{algorithmic}[0]
+\Procedure{$E$}{}
+	\State {\bf return} \Call{match}{${\bf num}$} \textbf{and} \Call{E'}{}
+\EndProcedure
+\Statex
+\Procedure{$E'$}{}
+	\State {\bf return} \Call{$E'_1$}{} \textbf{or} \Call{$E'_2$}{}
+\EndProcedure
+\Statex
+\Procedure{$E'_1$}{}
+	\State {\bf return} \Call{match}{+} \textbf{and} \Call{$E$}{} \textbf{and} \Call{$E'$}{}
+\EndProcedure
+\Statex
+\Procedure{$E'_2$}{}
+	\State {\bf return} \textbf{true}
+\EndProcedure
+
+\end{algorithmic}
+\end{framed}
+\end{tiny}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{Algorithm -- Activity}
+
+\textbf{\color{purple}Grammar:} \\
+\begin{tabular}{l @{} c @{} l}
+$expr$        & {\myprod}   & $\textbf{num}$ $|$ $term$                    \\
+$term$        & {\myprod}   & $factor$ $|$ $factor$ + $term$               \\
+$factor$      & {\myprod}   & $\textbf{num}$ $|$ $\textbf{num}$ * $factor$
+\end{tabular}
+
+\vfill
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{Left Recursion}
+\textbf{\color{purple}Grammar:} \\
+\begin{tabular}{l @{} c @{} l}
+$E$        & {\myprod}   & $E$ + $T$ $|$ $\textbf{num}$
+\end{tabular}
+\pause
+\vspace{0.5cm}
+\begin{tiny}
+
+\begin{framed}
+\begin{algorithmic}[0]
+\Procedure{$E$}{}
+	\State {\bf return} \Call{$E$}{} \textbf{and} \Call{match}{+} \textbf{and} \Call{match}{${\bf num}$}
+\EndProcedure
+\Statex
+\Procedure{$T$}{}
+	\State {\bf return} \Call{$E'_1$}{} \textbf{or} \Call{$E'_2$}{}
+\EndProcedure
+\end{algorithmic}
+\end{framed}
+\end{tiny}
+
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% frame begin %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Recursive Descent Parsing}
+{Left Recursion}
+
+\begin{tabular}{c @{\hspace{0.5cm} $\Rightarrow$ \hspace{0.5cm}} c}
+\begin{minipage}{0.45\textwidth}
+\textbf{\color{purple}\underline{Grammar:}}
+\begin{framed}
+\begin{tabular}{l @{} c @{} l}
+$E$        & {\myprod}   & $E$ + $T$ $|$ $\textbf{num}$
+\end{tabular}
+\end{framed}
+\pause
+\end{minipage}
+&
+\begin{minipage}{0.4\textwidth}
+\textbf{\color{purple}\underline{Modified Grammar:}}
+
+\begin{framed}
+\begin{tabular}{l @{} c @{} l}
+$E$        & {\myprod}   & \textbf{num} $E'$                      \\
+$E'$       & {\myprod}   & + $E$ $E'$ $|$ $\epsilon$
+\end{tabular}
+\end{framed}
+\end{minipage}
+\end{tabular}
+
+\pause
+\begin{itemize}
+\item Algorithm available for removing left recursion
+\item Self-study
+\end{itemize}
+\end{frame}
+% frame end %%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
